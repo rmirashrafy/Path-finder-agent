@@ -1,0 +1,126 @@
+#include <SFML/Graphics.hpp>
+#include <iostream>
+#include "Playground.h"
+
+using namespace std;
+
+/* in this int array :
+    goal is set to 100
+    start is set to 0
+    every tunnel is 3
+    unvisited sq is -1
+    visited sq is 1
+    vectors are a digit number where first digit is Direction(clockwise and in 8 directions) and 
+    the second and so on are the amout of steps 
+*/
+
+
+int main() {
+    //play ground sq size TODO:what if the input is less than 6?
+    int LenghtOfPlayGround;
+    cin >> LenghtOfPlayGround;
+
+    if (LenghtOfPlayGround <= 6) {
+        cout << "Invalid size, The size must be more than 6." << endl;
+        return 1;
+    }
+
+    Playground playground(LenghtOfPlayGround);
+    /*
+    try {
+        playground.initialize();
+    } catch (const std::invalid_argument& e) {
+        std::cout << e.what() << std::endl;
+        return 1;
+    }*/
+
+    //call by refrence to be readble IGUESS
+    const auto& grid = playground.getPlayground();
+    int GoalPositionX = playground.getGoalPositionX();
+    int GoalPositionY = playground.getGoalPositionY();
+
+    // Size of window and sq
+    int squareSize = 90;
+    int windowSize = LenghtOfPlayGround * squareSize;
+
+    // main window
+    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "PlayGroung Grid");
+
+    // random number
+    srand(static_cast<unsigned int>(time(NULL)));
+
+    // Load font
+    sf::Font font;
+    font.loadFromFile("arial.ttf");
+    /*
+    if (!font.loadFromFile("arial.ttf")) {
+        std::cerr << "Error loading font\n";
+        return -1;
+    }
+    */
+
+   //main window processing
+    while (window.isOpen()) {
+
+        //this needs to be cleared
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        window.clear(sf::Color::White);
+
+        // grids drawing
+
+        for (int i = 0; i < LenghtOfPlayGround; ++i) {
+            for (int j = 0; j < LenghtOfPlayGround; ++j) {
+
+                sf::RectangleShape square(sf::Vector2f(squareSize, squareSize));
+                square.setPosition(i * squareSize, j * squareSize);
+                
+                if (i == GoalPositionX && j == GoalPositionY) {
+                    // set goal position blue
+                    square.setFillColor(sf::Color::Blue); 
+                } 
+                else if (grid[i][j] == 3) {
+                    // set goal position yellow
+                    square.setFillColor(sf::Color::Yellow);
+                } 
+                else if (grid[i][j] > 10) {
+
+                    // Set vector square color to green
+                    square.setFillColor(sf::Color::Green);
+
+                    // Extract direction and steps
+                    int mix = grid[i][j];
+                    int direction = mix % 10;
+                    int steps = mix / 10;
+
+                    // display text: direction and steps on sqs
+                    //TODO: two ways to deside wich 
+                    sf::Text text1;
+                    text1.setFont(font);
+                    text1.setCharacterSize(10);
+                    text1.setFillColor(sf::Color::Black);
+                    text1.setString("D: " + std::to_string(direction) + " S: " + std::to_string(steps));
+                    //text1.setPosition(i * squareSize + 5, j * squareSize + 5);
+                    sf::Vector2f centerPos = sf::Vector2f((square.getPosition().x + square.getSize().x) / 2, (square.getPosition().y + square.getSize().y) / 2);
+                    text1.setPosition(centerPos.x - text1.getGlobalBounds().width / 2, centerPos.y - text1.getGlobalBounds().height / 2);
+                    
+                    // Draw text
+                    window.draw(text1);
+                } else {
+                    square.setFillColor(sf::Color::White); // Rest of the squares in white
+                }
+                square.setOutlineThickness(2);
+                square.setOutlineColor(sf::Color::Black);
+                window.draw(square);
+            }
+        }
+
+        window.display();
+    }
+
+    return 0;
+}
