@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
+#include <vector>
 #include "Playground.h"
 
 using namespace std;
@@ -11,12 +12,23 @@ using namespace std;
     unvisited sq is -1
     visited sq is 1
     vectors are a digit number where first digit is Direction(clockwise and in 8 directions) and 
-    the second and so on are the amout of steps 
+    the second and so on are the amount of steps 
 */
 
+// Function to get color based on value
+sf::Color getColor(int value) {
+    switch (value) {
+        case 0: return sf::Color::White;      // Start position
+        case 1: return sf::Color::Green;      // Visited square
+        case 3: return sf::Color::Yellow;     // Tunnel
+        case 100: return sf::Color::Blue;     // Goal
+        case -1: return sf::Color(205, 193, 180); // Unvisited square
+        default: return sf::Color(238, 228, 218); // Other
+    }
+}
 
 int main() {
-    //play ground sq size TODO:what if the input is less than 6?
+    // Play ground sq size TODO: what if the input is less than 6?
     int LenghtOfPlayGround;
     cin >> LenghtOfPlayGround;
 
@@ -26,43 +38,26 @@ int main() {
     }
 
     Playground playground(LenghtOfPlayGround);
-    /*
-    try {
-        playground.initialize();
-    } catch (const std::invalid_argument& e) {
-        std::cout << e.what() << std::endl;
-        return 1;
-    }*/
-
-    //call by refrence to be readble IGUESS
     const auto& grid = playground.getPlayground();
     int GoalPositionX = playground.getGoalPositionX();
     int GoalPositionY = playground.getGoalPositionY();
 
-    // Size of window and sq
+    // Size of window and squares
     int squareSize = 90;
     int windowSize = LenghtOfPlayGround * squareSize;
 
-    // main window
-    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "PlayGroung Grid");
-
-    // random number
-    srand(static_cast<unsigned int>(time(NULL)));
+    // Main window
+    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Playground Grid");
 
     // Load font
     sf::Font font;
-    font.loadFromFile("arial.ttf");
-    /*
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Error loading font\n";
         return -1;
     }
-    */
 
-   //main window processing
+    // Main window processing
     while (window.isOpen()) {
-
-        //this needs to be cleared
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
@@ -71,51 +66,28 @@ int main() {
 
         window.clear(sf::Color::White);
 
-        // grids drawing
-
+        // Grid drawing
         for (int i = 0; i < LenghtOfPlayGround; ++i) {
             for (int j = 0; j < LenghtOfPlayGround; ++j) {
-
-                sf::RectangleShape square(sf::Vector2f(squareSize, squareSize));
-                square.setPosition(i * squareSize, j * squareSize);
-                
-                if (i == GoalPositionX && j == GoalPositionY) {
-                    // set goal position blue
-                    square.setFillColor(sf::Color::Blue); 
-                } 
-                else if (grid[i][j] == 3) {
-                    // set goal position yellow
-                    square.setFillColor(sf::Color::Yellow);
-                } 
-                else if (grid[i][j] > 10) {
-
-                    // Set vector square color to green
-                    square.setFillColor(sf::Color::Green);
-
-                    // Extract direction and steps
-                    int mix = grid[i][j];
-                    int direction = mix % 10;
-                    int steps = mix / 10;
-
-                    // display text: direction and steps on sqs
-                    //TODO: two ways to deside wich 
-                    sf::Text text1;
-                    text1.setFont(font);
-                    text1.setCharacterSize(10);
-                    text1.setFillColor(sf::Color::Black);
-                    text1.setString("D: " + std::to_string(direction) + " S: " + std::to_string(steps));
-                    //text1.setPosition(i * squareSize + 5, j * squareSize + 5);
-                    sf::Vector2f centerPos = sf::Vector2f((square.getPosition().x + square.getSize().x) / 2, (square.getPosition().y + square.getSize().y) / 2);
-                    text1.setPosition(centerPos.x - text1.getGlobalBounds().width / 2, centerPos.y - text1.getGlobalBounds().height / 2);
-                    
-                    // Draw text
-                    window.draw(text1);
-                } else {
-                    square.setFillColor(sf::Color::White); // Rest of the squares in white
-                }
+                sf::RectangleShape square(sf::Vector2f(squareSize - 5, squareSize - 5));
+                square.setPosition(j * squareSize, i * squareSize);
+                square.setFillColor(getColor(grid[i][j]));
                 square.setOutlineThickness(2);
                 square.setOutlineColor(sf::Color::Black);
                 window.draw(square);
+
+                // Add text if necessary
+                if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 3 && grid[i][j] != 100) {
+                    sf::Text text;
+                    text.setFont(font);
+                    text.setString(to_string(grid[i][j]));
+                    text.setCharacterSize(24);
+                    text.setFillColor(sf::Color::Black);
+                    sf::FloatRect textRect = text.getLocalBounds();
+                    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+                    text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
+                    window.draw(text);
+                }
             }
         }
 
