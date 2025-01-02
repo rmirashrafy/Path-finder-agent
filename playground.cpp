@@ -3,6 +3,7 @@
 #include <ctime>
 #include <iostream>
 #include <random>
+#include <math.h>
 
 /*
 TODO : core dromp get checked
@@ -50,6 +51,8 @@ void Playground::generateRandomValues() {
         int min = 0;
         int max = size;
 
+    int const degree[8] ={90, 45, 0, 305, 270, 335, 180, 135};
+    
     for(int i = 0; i < NumberOfTunnels; i++) {
 
         // Initialize a random number generator
@@ -107,11 +110,29 @@ void Playground::generateRandomValues() {
 
             //Random number in (1,n) range
             //TODO: it needs to be fixed realated to agent position
-            Steps = 1+ rand() % ((size/2) +1);
+            Steps = 1+ rand() % ((size/2));
+
+            //check if the action is even possible
+            int endXpos, endYpos;
+            int degreeValue = (degree[Direction-1])*(M_PI/180);
+            endXpos = i + (Steps*cos(degreeValue));
+            endYpos = j + (Steps*sin(degreeValue));
+            bool possibleMove;
+
+            if(endXpos>(size-1) || endXpos<0){
+                possibleMove = false;
+            }
+            else if(endYpos>(size-1) || endYpos<0){
+                possibleMove = false;
+            }
+            else{
+                possibleMove = true;
+            }
 
             int mix = Steps*10 + Direction;
+            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
 
-            if(ThePlayGround[i][j]!=3 && randomValue<=3){
+            if(ThePlayGround[i][j]!=3 && randomValue<=3 && possibleMove){
                 ThePlayGround[i][j] = mix;
             }
         }
