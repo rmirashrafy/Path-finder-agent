@@ -4,6 +4,7 @@
 #include <iostream>
 #include <random>
 #include <math.h>
+#include <cmath>
 
 /*
 TODO : core dromp get checked
@@ -51,7 +52,7 @@ void Playground::generateRandomValues() {
         int min = 0;
         int max = size;
 
-    int const degree[8] ={90, 45, 0, 305, 270, 335, 180, 135};
+    int const degree[8] ={90, 45, 0, 315, 270, 335, 180, 135};
     
     for(int i = 0; i < NumberOfTunnels; i++) {
 
@@ -113,16 +114,21 @@ void Playground::generateRandomValues() {
             Steps = 1+ rand() % ((size/2));
 
             //check if the action is even possible
-            int endXpos, endYpos;
-            int degreeValue = (degree[Direction-1])*(M_PI/180);
-            endXpos = i + (Steps*cos(degreeValue));
-            endYpos = j + (Steps*sin(degreeValue));
+            double endXpos, endYpos;
+            double degreeValue = (degree[Direction-1])*(M_PI/180);
+            endYpos = j + (Steps*cos(degreeValue));
+            endXpos = (-1)*i + (Steps*sin(degreeValue));
+            
+            endXpos = round(endXpos);
+            endYpos = round(endYpos);
+
+            //endYpos = (-1)*endYpos;
             bool possibleMove;
 
             if(endXpos>(size-1) || endXpos<0){
                 possibleMove = false;
             }
-            else if(endYpos>(size-1) || endYpos<0){
+            else if(endYpos>(-1)*(size-1) || endYpos>0){
                 possibleMove = false;
             }
             else{
@@ -130,9 +136,9 @@ void Playground::generateRandomValues() {
             }
 
             int mix = Steps*10 + Direction;
-            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
+            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degreeValue<<" deg: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
 
-            if(ThePlayGround[i][j]!=3 && randomValue<=3 && possibleMove){
+            if(ThePlayGround[i][j]!=3 && randomValue<=9 && possibleMove){
                 ThePlayGround[i][j] = mix;
             }
         }
