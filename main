@@ -1,98 +1,164 @@
-#include <SFML/Graphics.hpp>
-#include <iostream>
-#include <vector>
 #include "Playground.h"
+#include <cstdlib>
+#include <ctime>
+#include <iostream>
+#include <random>
+#include <math.h>
+#include <cmath>
+
+/*
+TODO : core dromp get checked
+check the random range s
+change all the random prodactions
+cleaning the code
+*/
 
 using namespace std;
 
-/* in this int array :
-    goal is set to 100
-    start is set to 0
-    every tunnel is 3
-    unvisited sq is -1
-    visited sq is 1
-    vectors are a digit number where first digit is Direction(clockwise and in 8 directions) and 
-    the second and so on are the amount of steps 
-*/
-
-// Function to get color based on value
-sf::Color getColor(int value) {
-    switch (value) {
-        case 0: return sf::Color::White;      // Start position
-        case 1: return sf::Color::Green;      // Visited square
-        case 3: return sf::Color::Yellow;     // Tunnel
-        case 100: return sf::Color::Blue;     // Goal
-        case -1: return sf::Color(205, 193, 180); // Unvisited square
-        default: return sf::Color(238, 228, 218); // Other
-    }
+Playground::Playground(int size) : size(size), ThePlayGround(size, std::vector<int>(size, -1)) {
+    initialize();
 }
 
-int main() {
-    // Play ground sq size TODO: what if the input is less than 6?
-    int LenghtOfPlayGround;
-    cin >> LenghtOfPlayGround;
-
-    if (LenghtOfPlayGround <= 6) {
+void Playground::initialize() {
+    if (size <= 6) {
         cout << "Invalid size, The size must be more than 6." << endl;
-        return 1;
+        throw std::invalid_argument("Invalid size");
+    }
+    generateRandomValues();
+}
+
+void Playground::generateRandomValues() {
+    //create a rand num based on time
+    srand((unsigned) time(NULL));
+
+    //Random goal position in (4-n] range 
+    GoalPositionX = 4 + rand() % (size - 5 + 1);
+    GoalPositionY = 4 + rand() % (size - 5 + 1);
+
+    //Number of tunnels in [1-n] range
+    int NumberOfTunnels;
+    NumberOfTunnels = 1 + rand() % (size - 2 +1);
+    // cout<<NumberOfTunnels<<"\n";
+
+    //Number of vectors in [1-n] range
+    // int NumberOfVectors;
+    // NumberOfVectors = 1 + rand() % (size - 2 +1);
+
+    //Position of tunnels, first row:X, Second row:Y
+    //int TunnelsPositionsArray[NumberOfTunnels][2];
+    int TempPosX,TempPosY,TempStatic;
+
+    // Define range
+        int min = 0;
+        int max = size;
+
+    int const degree[8] ={90, 45, 0, 315, 270, 335, 180, 135};
+    
+    for(int i = 0; i < NumberOfTunnels; i++) {
+
+        // Initialize a random number generator
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> distrib(min, max);
+
+        // Generate random number in the range [min, max]
+        // int randomValue = distrib(gen);
+
+        //Random number in (1,n) range
+        TempPosX = distrib(gen);
+        TempPosY = distrib(gen);
+
+        ThePlayGround[TempPosX][TempPosY] = 3;
     }
 
-    Playground playground(LenghtOfPlayGround);
-    const auto& grid = playground.getPlayground();
-    int GoalPositionX = playground.getGoalPositionX();
-    int GoalPositionY = playground.getGoalPositionY();
+    //TODO: what if vector and tunnel happend to be the same place
+    for (int i = 0; i < size; i++)
+    {
 
-    // Size of window and squares
-    int squareSize = 90;
-    int windowSize = LenghtOfPlayGround * squareSize;
+        for (int j = 0; j < size; j++)
+        {
+            /* code */
+                // TempStatic = rand() % 10 + 1;
+            //TempPosY = 1 + 4 + rand() % (size - 5);
 
-    // Main window
-    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Playground Grid");
+            // Define range
+            int min = 1;
+            int max = 10;
 
-    // Load font
-    sf::Font font;
-    if (!font.loadFromFile("arial.ttf")) {
-        std::cerr << "Error loading font\n";
-        return -1;
-    }
+            // Initialize a random number generator
+            random_device rd;
+            mt19937 gen(rd());
+            uniform_int_distribution<> distrib(min, max);
 
-    // Main window processing
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
+            // Generate random number in the range [min, max]
+            int randomValue = distrib(gen);
 
-        window.clear(sf::Color::White);
+            int Direction, Steps;
+            //random number from 1-8
+            Direction = 1 + rand() % (8);
 
-        // Grid drawing
-        for (int i = 0; i < LenghtOfPlayGround; ++i) {
-            for (int j = 0; j < LenghtOfPlayGround; ++j) {
-                sf::RectangleShape square(sf::Vector2f(squareSize - 5, squareSize - 5));
-                square.setPosition(j * squareSize, i * squareSize);
-                square.setFillColor(getColor(grid[i][j]));
-                square.setOutlineThickness(2);
-                square.setOutlineColor(sf::Color::Black);
-                window.draw(square);
+            // Define range
+            // min = 1;
+            // max = size;
 
-                // Add text if necessary
-                if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 3 && grid[i][j] != 100) {
-                    sf::Text text;
-                    text.setFont(font);
-                    text.setString(to_string(grid[i][j]));
-                    text.setCharacterSize(24);
-                    text.setFillColor(sf::Color::Black);
-                    sf::FloatRect textRect = text.getLocalBounds();
-                    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-                    text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
-                    window.draw(text);
-                }
+            // // Initialize a random number generator
+            // random_device rd;
+            // mt19937 gen(rd());
+            // uniform_int_distribution<> distrib(min, max);
+
+            // Generate random number in the range [min, max]
+            // Steps = distrib(gen)/2;
+
+            //Random number in (1,n) range
+            //TODO: it needs to be fixed realated to agent position
+            Steps = 1+ rand() % ((size/2));
+
+            //check if the action is even possible
+            double endXpos, endYpos;
+            double degreeValue = (degree[Direction-1])*(M_PI/180);
+            endYpos = j + (Steps*cos(degreeValue));
+            endXpos = (-1)*i + (Steps*sin(degreeValue));
+            
+            endXpos = round(endXpos);
+            endYpos = round(endYpos);
+
+            //endYpos = (-1)*endYpos;
+            bool possibleMove;
+
+            if(endXpos>(size-1) || endXpos<0){
+                possibleMove = false;
+            }
+            else if(endYpos>(-1)*(size-1) || endYpos>0){
+                possibleMove = false;
+            }
+            else{
+                possibleMove = true;
+            }
+
+            int mix = Steps*10 + Direction;
+            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degreeValue<<" deg: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
+
+            if(ThePlayGround[i][j]!=3 && randomValue<=9 && possibleMove){
+                ThePlayGround[i][j] = mix;
             }
         }
+        
 
-        window.display();
     }
 
-    return 0;
+    ThePlayGround[0][0]=0;
+    ThePlayGround[GoalPositionX][GoalPositionY]=100;
+    
+}
+
+std::vector<std::vector<int>> Playground::getPlayground() const {
+    return ThePlayGround;
+}
+
+int Playground::getGoalPositionX() const {
+    return GoalPositionX;
+}
+
+int Playground::getGoalPositionY() const {
+    return GoalPositionY;
 }
