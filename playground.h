@@ -1,9 +1,13 @@
 #ifndef PLAYGROUND_H
 #define PLAYGROUND_H
-
 #include <vector>
 
+/*
+TODO : change the vector grid to array grid
+*/
+
 class Playground {
+
 public:
     Playground(int size);
     void initialize();
@@ -17,6 +21,7 @@ private:
     int GoalPositionX;
     int GoalPositionY;
     void generateRandomValues();
+
 };
 
 #endif // PLAYGROUND_H
