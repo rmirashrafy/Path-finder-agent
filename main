@@ -15,13 +15,13 @@ using namespace std;
     the second and so on are the amount of steps 
 */
 
-// Function to get color based on value
+// get color based on value
 sf::Color getColor(int value) {
     switch (value) {
-        case 0: return sf::Color::White;      // Start position
-        case 1: return sf::Color::Green;      // Visited square
-        case 3: return sf::Color::Yellow;     // Tunnel
-        case 100: return sf::Color::Blue;     // Goal
+        case 0: return sf::Color::White;          // Start position
+        case 1: return sf::Color::Green;          // Visited square
+        case 3: return sf::Color::Yellow;         // Tunnel
+        case 100: return sf::Color::Blue;         // Goal
         case -1: return sf::Color(205, 193, 180); // Unvisited square
         default: return sf::Color(238, 228, 218); // Other
     }
@@ -43,13 +43,13 @@ int main() {
     int GoalPositionY = playground.getGoalPositionY();
 
     // Size of window and squares
-    int squareSize = 90;
+    int squareSize = 90; //TODO : the sq size must create a fitting window in screen
     int windowSize = LenghtOfPlayGround * squareSize;
 
     // Main window
     sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Playground Grid");
 
-    // Load font
+    // font
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Error loading font\n";
@@ -76,7 +76,7 @@ int main() {
                 square.setOutlineColor(sf::Color::Black);
                 window.draw(square);
 
-                // Add text if necessary
+                // Add text if there is a vector
                 if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 3 && grid[i][j] != 100) {
                     sf::Text text;
                     text.setFont(font);
