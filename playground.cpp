@@ -9,146 +9,15 @@
 /*
 TODO : core dromp get checked
 check the random range s
-change all the random prodactions
-cleaning the code
+change all the random prodactions -->its working
+what if vector and tunnel happend to be the same place 
+--> tunnel existing will be checked and then there where no tunnel a vector is placed
 */
 
 using namespace std;
 
 Playground::Playground(int size) : size(size), ThePlayGround(size, std::vector<int>(size, -1)) {
     initialize();
-}
-
-void Playground::initialize() {
-    if (size <= 6) {
-        cout << "Invalid size, The size must be more than 6." << endl;
-        throw std::invalid_argument("Invalid size");
-    }
-    generateRandomValues();
-}
-
-void Playground::generateRandomValues() {
-    //create a rand num based on time
-    srand((unsigned) time(NULL));
-
-    //Random goal position in (4-n] range 
-    GoalPositionX = 4 + rand() % (size - 5 + 1);
-    GoalPositionY = 4 + rand() % (size - 5 + 1);
-
-    //Number of tunnels in [1-n] range
-    int NumberOfTunnels;
-    NumberOfTunnels = 1 + rand() % (size - 2 +1);
-    // cout<<NumberOfTunnels<<"\n";
-
-    //Number of vectors in [1-n] range
-    // int NumberOfVectors;
-    // NumberOfVectors = 1 + rand() % (size - 2 +1);
-
-    //Position of tunnels, first row:X, Second row:Y
-    //int TunnelsPositionsArray[NumberOfTunnels][2];
-    int TempPosX,TempPosY,TempStatic;
-
-    // Define range
-        int min = 0;
-        int max = size;
-
-    int const degree[8] ={90, 45, 0, 315, 270, 335, 180, 135};
-    
-    for(int i = 0; i < NumberOfTunnels; i++) {
-
-        // Initialize a random number generator
-        random_device rd;
-        mt19937 gen(rd());
-        uniform_int_distribution<> distrib(min, max);
-
-        // Generate random number in the range [min, max]
-        // int randomValue = distrib(gen);
-
-        //Random number in (1,n) range
-        TempPosX = distrib(gen);
-        TempPosY = distrib(gen);
-
-        ThePlayGround[TempPosX][TempPosY] = 3;
-    }
-
-    //TODO: what if vector and tunnel happend to be the same place
-    for (int i = 0; i < size; i++)
-    {
-
-        for (int j = 0; j < size; j++)
-        {
-            /* code */
-                // TempStatic = rand() % 10 + 1;
-            //TempPosY = 1 + 4 + rand() % (size - 5);
-
-            // Define range
-            int min = 1;
-            int max = 10;
-
-            // Initialize a random number generator
-            random_device rd;
-            mt19937 gen(rd());
-            uniform_int_distribution<> distrib(min, max);
-
-            // Generate random number in the range [min, max]
-            int randomValue = distrib(gen);
-
-            int Direction, Steps;
-            //random number from 1-8
-            Direction = 1 + rand() % (8);
-
-            // Define range
-            // min = 1;
-            // max = size;
-
-            // // Initialize a random number generator
-            // random_device rd;
-            // mt19937 gen(rd());
-            // uniform_int_distribution<> distrib(min, max);
-
-            // Generate random number in the range [min, max]
-            // Steps = distrib(gen)/2;
-
-            //Random number in (1,n) range
-            //TODO: it needs to be fixed realated to agent position
-            Steps = 1+ rand() % ((size/2));
-
-            //check if the action is even possible
-            double endXpos, endYpos;
-            double degreeValue = (degree[Direction-1])*(M_PI/180);
-            endYpos = j + (Steps*cos(degreeValue));
-            endXpos = (-1)*i + (Steps*sin(degreeValue));
-            
-            endXpos = round(endXpos);
-            endYpos = round(endYpos);
-
-            //endYpos = (-1)*endYpos;
-            bool possibleMove;
-
-            if(endXpos>(size-1) || endXpos<0){
-                possibleMove = false;
-            }
-            else if(endYpos>(-1)*(size-1) || endYpos>0){
-                possibleMove = false;
-            }
-            else{
-                possibleMove = true;
-            }
-
-            int mix = Steps*10 + Direction;
-            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degreeValue<<" deg: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
-
-            if(ThePlayGround[i][j]!=3 && randomValue<=9 && possibleMove){
-                ThePlayGround[i][j] = mix;
-            }
-        }
-        
-
-    }
-
-    ThePlayGround[0][0]=0;
-    ThePlayGround[GoalPositionX][GoalPositionY]=100;
-    
 }
 
 std::vector<std::vector<int>> Playground::getPlayground() const {
@@ -162,3 +31,105 @@ int Playground::getGoalPositionX() const {
 int Playground::getGoalPositionY() const {
     return GoalPositionY;
 }
+
+void Playground::initialize() {
+    if (size <= 6) {
+        cout << "Invalid size, The size must be more than 6." << endl;
+        throw std::invalid_argument("Invalid size");
+    }
+    generateRandomValues();
+}
+
+void Playground::generateRandomValues() {
+
+    //create a rand num based on time
+    srand((unsigned) time(NULL));
+
+    //Random goal position in (4-n] range 
+    GoalPositionX = 4 + rand() % (size - 5 + 1);
+    GoalPositionY = 4 + rand() % (size - 5 + 1);
+
+    //Number of tunnels in [1-n] range
+    int NumberOfTunnels;
+    NumberOfTunnels = 1 + rand() % (size - 2 +1);
+    // cout<<NumberOfTunnels<<"\n";
+
+    int TempPosX,TempPosY,TempStatic;
+
+    // range of random numbers
+    int min = 0;
+    int max = size;
+
+    //defining degree list to be able to calculate end Position of each vector
+    int const degree[8] ={180, 135, 90, 45, 0, 315, 270, 225};
+    
+    for(int i = 0; i < NumberOfTunnels; i++) {
+
+        // Initialize a random number generator
+        random_device rd;
+        mt19937 gen(rd());
+        uniform_int_distribution<> distrib(min, max);
+
+        //Random number in (1,n) range
+        TempPosX = distrib(gen);
+        TempPosY = distrib(gen);
+        ThePlayGround[TempPosX][TempPosY] = 3;
+    }
+
+    for (int i = 0; i < size; i++)
+    {
+        for (int j = 0; j < size; j++)
+        {
+            //creating 30% chance of vector in a sq
+            int min = 1;
+            int max = 10;
+            random_device rd;
+            mt19937 gen(rd());
+            uniform_int_distribution<> distrib(min, max);
+            int randomValue = distrib(gen);
+
+            int Direction, Steps;
+            //random number from 1-8
+            Direction = 1 + rand() % (8);
+            Steps = 1+ rand() % ((size/2));
+            if(Steps%2==0){
+                Steps=(1.4)*(Steps); // this is because the crossing directions have to go sqrt(2)
+            }
+
+            // ThePlayGround[i][j] = i*1000+j; // this is just for checking the grids
+
+            //check if the action is even possible in the playground
+            double endXpos, endYpos;
+            double degreeValue = (degree[Direction-1])*(M_PI/180);
+            endYpos = j + (Steps*sin(degreeValue));
+            endXpos = i + (Steps*cos(degreeValue));
+            
+            endXpos = round(endXpos);
+            endYpos = round(endYpos);
+
+            bool possibleMove;
+
+            if((endXpos<(size) && endXpos>=0)  &&  (endYpos<(size) && endYpos>=0)){
+                possibleMove = true;
+            }
+            else{
+                possibleMove = false;
+            }
+
+            int mix = Steps*10 + Direction;
+            //vector selection log
+            cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degreeValue<<" deg: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
+
+            if(ThePlayGround[i][j]!=3  && possibleMove && randomValue<=3){
+                ThePlayGround[i][j] = mix;
+            }
+        }
+        
+
+    }
+
+    ThePlayGround[0][0]=0;
+    ThePlayGround[GoalPositionX][GoalPositionY]=100;
+    
+}
+
