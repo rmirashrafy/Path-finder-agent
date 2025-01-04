@@ -5,12 +5,35 @@
 #include <ctime>
 #include <random>
 #include <cmath>
+#include <string.h>
 
 using namespace std;
+
+struct position
+{
+    int x;
+    int y;
+};
 
 /*
 TODO : change the vector grid to array grid
 write xny end pos funcs
+    // Check if the action is even possible in the playground
+    // if ((endXpos < LengthOfPlayGround && endXpos >= 0) && (endYpos < LengthOfPlayGround && endYpos >= 0)) {}
+    TODO: what if the input is less than 6?
+
+    // Define the 8 possible directions as (dx, dy) pairs
+    position aroundPos[8][2] = {
+        {-1,  0},  // left
+        {-1, -1},  // up-left
+        {0, -1},  // up
+        {1, -1},  // up-right
+        {1,  1},  // down-right
+        {0,  1},  // down
+        {-1,  1}   // down-left
+    };
+    // position VectorMovement(){}//this func does a vector input move and return the end position
+// position TunnelMovement(){}//this func does a Tunnel move and return the end position
 */
 
 /* in this int array :
@@ -24,47 +47,127 @@ write xny end pos funcs
     agent has to be added in this file
 */
 
+class PositionStack {
+private:
+    position* arr;
+    int top;
+    int capacity;
+
+public:
+    PositionStack(int size) {
+        arr = new position[size];
+        capacity = size;
+        top = -1;
+    }
+
+    ~PositionStack() {
+        delete[] arr;
+    }
+
+    // Function to add a position `pos` to the stack
+    void push(position pos) {
+        if (isFull()) {
+            cout << "Overflow: Stack is full\n";
+            return;
+        }
+        arr[++top] = pos;
+    }
+
+    // Function to pop the top position from the stack
+    position pop() {
+        if (isEmpty()) {
+            cout << "Underflow: Stack is empty\n";
+            return {-1, -1}; // Return an invalid position
+        }
+        return arr[top--];
+    }
+
+    // Function to return the top position of the stack
+    position peek() {
+        if (isEmpty()) {
+            cout << "Underflow: Stack is empty\n";
+            return {-1, -1}; // Return an invalid position
+        }
+        return arr[top];
+    }
+
+    // Function to return the size of the stack
+    int size() {
+        return top + 1;
+    }
+
+    // Function to check if the stack is empty
+    bool isEmpty() {
+        return top == -1;
+    }
+
+    // Function to check if the stack is full
+    bool isFull() {
+        return top == capacity - 1;
+    }
+};
+
 int randomNumber(int min, int max) {
     random_device rd;
     mt19937 gen(rd());
     uniform_int_distribution<> distrib(min, max);
     return distrib(gen);
 }
-void thefunctiontobefixed(){
+
+position EndPosition(int startX, int startY, int steps, int Direction) {
+    //defining degree list to be able to calculate end Position of each vector
+    int const degree[8] ={180, 135, 90, 45, 0, 315, 270, 225};
+    // This function is supposed to return end x and y position
     // ThePlayGround[i][j] = i*1000+j; // this is just for checking the grids
-            //check if the action is even possible in the playground
-            // double endXpos, endYpos;
-            // double degreeValue = (degree[Direction-1])*(M_PI/180);
-            // endYpos = j + (st*sin(degreeValue));
-            // endXpos = i + (st*cos(degreeValue));
-            
-            // endXpos = round(endXpos);
-            // endYpos = round(endYpos);
-
-            // bool possibleMove;
-
-            // if((endXpos<(LenghtOfPlayGround) && endXpos>=0)  &&  (endYpos<(LenghtOfPlayGround) && endYpos>=0)){
-            //     possibleMove = true;
-            // }
-            // else{
-            //     possibleMove = false;
-            // }
-
+    double endXpos, endYpos;
+    double degreeValue = (degree[Direction - 1]) * (M_PI / 180.0);
+    double st;
+    if(steps%2==0){
+        st=(1.4)*(steps); // this is because the crossing directions have to go sqrt(2)
+    }
+    endYpos = startY + (st * sin(degreeValue));
+    endXpos = startX + (st * cos(degreeValue));
+    endXpos = round(endXpos);
+    endYpos = round(endYpos);
+    position endPosition;
+    endPosition.x = endXpos;
+    endPosition.y = endYpos;
+    
+    return endPosition;
 }
+
+position RandomMoveAround(int startX, int startY, int LenghtOfPlayGround){
+    //this func does a random move in one of the 8 directions and 1 step and return the end position
+    // pick one of the directions and end position
+    int randomDir = randomNumber(1, 8);
+    position endPosition;
+    endPosition = EndPosition(startX,startY,1,randomDir);
+    if((endPosition.x>=0 && endPosition.x<LenghtOfPlayGround) || (endPosition.y>=0 && endPosition.y<LenghtOfPlayGround)){
+        //check if the end position will ends in the play ground
+        return endPosition;
+    }
+    else{
+        endPosition.x = startX;
+        endPosition.y = startY;
+        return endPosition;
+    }
+    
+}
+
 // get color based on value
 sf::Color getColor(int value) {
     switch (value) {
         case 0: return sf::Color::White;          // Start position
         case 1: return sf::Color::Green;          // Visited square
-        case 3: return sf::Color::Yellow;         // Tunnel
-        case 100: return sf::Color::Blue;         // Goal
+        case 3: return sf::Color::White;         // Tunnel
+        case 100: return sf::Color::White;         // Goal
         case -1: return sf::Color(205, 193, 180); // Unvisited square
         default: return sf::Color(238, 228, 218); // Other
     }
 }
 
 int main() {
-    // Play ground sq size TODO: what if the input is less than 6?
+    // Play ground sq size
     int LenghtOfPlayGround;
     cin >> LenghtOfPlayGround;
 
@@ -78,27 +181,24 @@ int main() {
     int GoalPositionX = randomNumber(4,LenghtOfPlayGround);
     int GoalPositionY = randomNumber(4,LenghtOfPlayGround);
 
-    for (int i = 0; i < LenghtOfPlayGround; i++)
+    for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes to -1
     {
         for (int j = 0; j < LenghtOfPlayGround; j++)
         {
             PlayGround[i][j] = -1;
         }
     }
-    PlayGround[0][0]=0;
+
+    PlayGround[0][0]=0;//agent start point
     PlayGround[GoalPositionX][GoalPositionY]=100;
 
     //Number of tunnels in [1-n] range
     int NumberOfTunnels;
     NumberOfTunnels = randomNumber(1,LenghtOfPlayGround);
-    // cout<<NumberOfTunnels<<"\n";
+    cout<<NumberOfTunnels<<"\n";
+    int TempPosX,TempPosY,TempStatic;  
 
-    int TempPosX,TempPosY,TempStatic;
-
-    //defining degree list to be able to calculate end Position of each vector
-    int const degree[8] ={180, 135, 90, 45, 0, 315, 270, 225};
-    
-    for(int i = 0; i < NumberOfTunnels; i++) {
+    for(int i = 0; i < NumberOfTunnels; i++) {//setting random tunnels
         //Random number in (1,n) range
         TempPosX = randomNumber(1,LenghtOfPlayGround-2);
         TempPosY = randomNumber(1,LenghtOfPlayGround-2);
@@ -109,8 +209,7 @@ int main() {
         PlayGround[TempPosX][TempPosY] = 3;
     }
 
-    for (int i = 0; i < LenghtOfPlayGround; i++)
-    {
+    for (int i = 0; i < LenghtOfPlayGround; i++) {//seting random vectors
         for (int j = 0; j < LenghtOfPlayGround; j++)
         {
             //creating 30% chance of vector in a sq
@@ -123,25 +222,20 @@ int main() {
             if(Steps%2==0){
                 st=(1.4)*(Steps); // this is because the crossing directions have to go sqrt(2)
             }
-            
             int mix = Steps*10 + Direction;
             //vector selection log
             // cout<<" i , j: "<<i<<" ,"<<j<<" mix: "<<mix<<" degree: "<<degreeValue<<" deg: "<<degree[Direction-1]<<" endX: "<<endXpos<<" endY: "<<endYpos<<" possible move: "<<possibleMove<<"\n";
-
             if(PlayGround[i][j]!=3 && PlayGround[i][j]!=100 && PlayGround[i][j]!=0 && randomValue<=3){//&& possibleMove 
                 PlayGround[i][j] = mix;
             }
-            
         }
     }
 
     // Size of window and squares
     int squareSize = 90; //TODO : the sq size must create a fitting window in screen
     int windowSize = LenghtOfPlayGround * squareSize;
-
     // Main window
     sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Playground Grid");
-
     // font
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
@@ -149,44 +243,94 @@ int main() {
         return -1;
     }
 
-    // Main window processing
     while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-        }
-
-        window.clear(sf::Color::White);
-
-        // Grid drawing
-        const auto& grid = PlayGround;
-        for (int i = 0; i < LenghtOfPlayGround; ++i) {
-            for (int j = 0; j < LenghtOfPlayGround; ++j) {
-                sf::RectangleShape square(sf::Vector2f(squareSize - 5, squareSize - 5));
-                square.setPosition(j * squareSize, i * squareSize);
-                square.setFillColor(getColor(grid[i][j]));
-                square.setOutlineThickness(2);
-                square.setOutlineColor(sf::Color::Black);
-                window.draw(square);
-
-                // Add text if there is a vector
-                if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 3 && grid[i][j] != 100) {
-                    sf::Text text;
-                    text.setFont(font);
-                    text.setString(to_string(grid[i][j]));
-                    text.setCharacterSize(24);
-                    text.setFillColor(sf::Color::Black);
-                    sf::FloatRect textRect = text.getLocalBounds();
-                    text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
-                    text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
-                    window.draw(text);
-                }
-            }
-        }
-
-        window.display();
+    sf::Event event;
+    while (window.pollEvent(event)) {
+        if (event.type == sf::Event::Closed)
+            window.close();
     }
+
+    window.clear(sf::Color::White);
+    const auto& grid = PlayGround;
+    // const char* arrows[8] =  {"←","↖","↑","↗","→","↘","↓","↙"};
+    // const char* arrows[8] =  {"\u2190", "\u2196", "\u2191", "\u2197", "\u2192", "\u2198", "\u2193", "\u2199"};
+    const char* arrows[8] =  {"1", "2", "3", "4", "5", "6", "7", "8"};
+
+    //-------------------------agent-decisions--------------------------
+    position agent;
+    agent.x=0;
+    agent.y=0;
+    bool done=false;
+
+    // while(!done){
+        // while (agent.x!=GoalPositionX && )
+        // {
+        //     /* code */
+        // }
+        for (int i = 0; i < 3; i++)
+        {
+            PlayGround[agent.x][agent.y]=1;
+            agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
+            cout<<agent.x<<"  "<<agent.y<<"\n";
+        }
+        done = true;
+        
+    // }
+
+    for (int i = 0; i < LenghtOfPlayGround; ++i) {
+        for (int j = 0; j < LenghtOfPlayGround; ++j) {
+            sf::RectangleShape square(sf::Vector2f(squareSize - 5, squareSize - 5));
+            square.setPosition(j * squareSize, i * squareSize);
+            square.setFillColor(getColor(grid[i][j]));
+            square.setOutlineThickness(2);
+            square.setOutlineColor(sf::Color::Black);
+            window.draw(square);
+
+            // Add text for tunnels and goal
+            if (grid[i][j] == 3) {
+                // Display 'T' for tunnel
+                sf::Text text;
+                text.setFont(font);
+                text.setString("T");
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                sf::FloatRect textRect = text.getLocalBounds();
+                text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+                text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
+                window.draw(text);
+            } else if (grid[i][j] == 100) {
+                // Display 'G' for goal
+                sf::Text text;
+                text.setFont(font);
+                text.setString("G");
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                sf::FloatRect textRect = text.getLocalBounds();
+                text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+                text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
+                window.draw(text);
+            } else if (grid[i][j] != -1 && grid[i][j] != 0) { //&& grid[i][j] != 3 && grid[i][j] != 100
+                int value = grid[i][j];
+                int steps = value / 10;
+                int direction = value % 10 - 1; // Adjust for zero-based indexing
+                const char* arrow = arrows[direction]; // Use const char* for arrow symbol
+                
+                sf::Text text;
+                text.setFont(font);
+                text.setString(std::string(arrow) + " * " + std::to_string(steps)); // Convert arrow to std::string
+                text.setCharacterSize(24);
+                text.setFillColor(sf::Color::Black);
+                sf::FloatRect textRect = text.getLocalBounds();
+                text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
+                text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
+                window.draw(text);
+            }
+
+        }
+    }
+
+    window.display();
+}
 
     return 0;
 }
