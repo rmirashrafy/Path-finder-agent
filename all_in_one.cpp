@@ -252,9 +252,9 @@ int main() {
 
     window.clear(sf::Color::White);
     const auto& grid = PlayGround;
-    // const char* arrows[8] =  {"←","↖","↑","↗","→","↘","↓","↙"};
+    const char* arrows[8] =  {"←","←↑","↑","↑→","→","↓→","↓","←↓"};
     // const char* arrows[8] =  {"\u2190", "\u2196", "\u2191", "\u2197", "\u2192", "\u2198", "\u2193", "\u2199"};
-    const char* arrows[8] =  {"1", "2", "3", "4", "5", "6", "7", "8"};
+    // const char* arrows[8] =  {"1", "2", "3", "4", "5", "6", "7", "8"};
 
     //-------------------------agent-decisions--------------------------
     position agent;
@@ -267,13 +267,13 @@ int main() {
         // {
         //     /* code */
         // }
-        for (int i = 0; i < 3; i++)
-        {
-            PlayGround[agent.x][agent.y]=1;
-            agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
-            cout<<agent.x<<"  "<<agent.y<<"\n";
-        }
-        done = true;
+        // for (int i = 0; i < 3; i++)
+        // {
+        //     PlayGround[agent.x][agent.y]=1;
+        //     agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
+        //     // cout<<agent.x<<"  "<<agent.y<<"\n";
+        // }
+        // done = true;
         
     // }
 
@@ -317,7 +317,13 @@ int main() {
                 
                 sf::Text text;
                 text.setFont(font);
-                text.setString(std::string(arrow) + " * " + std::to_string(steps)); // Convert arrow to std::string
+                // text.setString();
+                // text.setString();
+                text.setString(sf::String::fromUtf8(arrow, arrow + strlen(arrow)) + " * " + std::to_string(steps)); // Convert arrow to std::string
+                // std::wstring arrowText = std::wstring(L"") + (wchar_t)(0x2190 + direction); // Unicode arrows start at U+2190
+                // arrowText += L" * " + std::to_wstring(steps);
+                // text.setString(arrowText);
+
                 text.setCharacterSize(24);
                 text.setFillColor(sf::Color::Black);
                 sf::FloatRect textRect = text.getLocalBounds();
