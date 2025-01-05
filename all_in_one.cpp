@@ -121,17 +121,15 @@ position EndPosition(int startX, int startY, int steps, int Direction) {
     // ThePlayGround[i][j] = i*1000+j; // this is just for checking the grids
     double endXpos, endYpos;
     double degreeValue = (degree[Direction - 1]) * (M_PI / 180.0);
-    double st;
+    double st=steps;
     if(steps%2==0){
         st=(1.4)*(steps); // this is because the crossing directions have to go sqrt(2)
     }
     endYpos = startY + (st * sin(degreeValue));
     endXpos = startX + (st * cos(degreeValue));
-    endXpos = round(endXpos);
-    endYpos = round(endYpos);
     position endPosition;
-    endPosition.x = endXpos;
-    endPosition.y = endYpos;
+    endPosition.x = round(endXpos);
+    endPosition.y = round(endYpos);
     
     return endPosition;
 }
@@ -231,6 +229,62 @@ int main() {
         }
     }
 
+    //-------------------------agent-decisions--------------------------
+    position agent;
+    agent.x=0;
+    agent.y=0;
+    bool done=false;
+    PositionStack positions(LenghtOfPlayGround*LenghtOfPlayGround);
+    positions.push(agent);
+
+    while (!done)
+    {
+        //random move
+        int tempDir= randomNumber(1,8);
+        position tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
+
+        if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){
+            //check if the move is in the field
+            
+            cout<<agent.x<<" , "<<agent.y<<"\n";
+            //100, 0, -1, 1(deadEnd), 3, vectors
+
+            if(PlayGround[tempMove.x][tempMove.y]==100){
+                //update agent position
+                // agent.x=tempMove.x;
+                // agent.y=tempMove.y;
+                //end the cicle
+                done = true;
+                cout<<"Goal!";  
+                }
+            else if(PlayGround[tempMove.x][tempMove.y]==3){
+                //back move untill still in the feild
+                int c=0;
+                while (!positions.isEmpty() && c<3)
+                {
+                    agent=positions.pop();
+                    c++;
+                    cout<<"Tunnel back move";
+                }
+            }
+            else if(PlayGround[tempMove.x][tempMove.y]==-1){
+                //visit the sq
+                PlayGround[tempMove.x][tempMove.y]=1;
+                agent.x=tempMove.x;
+                agent.y=tempMove.y;
+                positions.push(agent); 
+            }
+            else if (PlayGround[tempMove.x][tempMove.y]==1){
+                //continue;
+            }
+            else if(PlayGround[tempMove.x][tempMove.y]==0){
+                // done=true;
+                // cout<<"No Path! ";
+                //continue;
+            }
+        }
+    }
+    
     // Size of window and squares
     int squareSize = 90; //TODO : the sq size must create a fitting window in screen
     int windowSize = LenghtOfPlayGround * squareSize;
@@ -255,27 +309,6 @@ int main() {
     const char* arrows[8] =  {"←","←↑","↑","↑→","→","↓→","↓","←↓"};
     // const char* arrows[8] =  {"\u2190", "\u2196", "\u2191", "\u2197", "\u2192", "\u2198", "\u2193", "\u2199"};
     // const char* arrows[8] =  {"1", "2", "3", "4", "5", "6", "7", "8"};
-
-    //-------------------------agent-decisions--------------------------
-    position agent;
-    agent.x=0;
-    agent.y=0;
-    bool done=false;
-
-    // while(!done){
-        // while (agent.x!=GoalPositionX && )
-        // {
-        //     /* code */
-        // }
-        // for (int i = 0; i < 3; i++)
-        // {
-        //     PlayGround[agent.x][agent.y]=1;
-        //     agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
-        //     // cout<<agent.x<<"  "<<agent.y<<"\n";
-        // }
-        // done = true;
-        
-    // }
 
     for (int i = 0; i < LenghtOfPlayGround; ++i) {
         for (int j = 0; j < LenghtOfPlayGround; ++j) {
