@@ -280,9 +280,9 @@ int main() {
                 continue;
             }
             else if(PlayGround[tempMove.x][tempMove.y]==0){//Call no path
-                done=true;
-                cout<<"No Path! ";
-                // continue;
+                // cout<<"No Path! ";
+                // done=true;
+                continue;
             }
             else{//Vector
                 int vector = PlayGround[tempMove.x][tempMove.y];
@@ -292,11 +292,14 @@ int main() {
                 cout<<"Visit vector: "<<agent.x<<" , "<<agent.y<<"\n";
                 int steps = vector / 10;
                 int direction = vector % 10;
-                while ((agent.x<(LenghtOfPlayGround) && agent.x>=0)  &&  (agent.y<(LenghtOfPlayGround) && agent.y>=0))
+                int c=0;
+                while (((agent.x<(LenghtOfPlayGround) && agent.x>=0)  &&  (agent.y<(LenghtOfPlayGround) && agent.y>=0)) && c<steps)
                 {
                     agent = EndPosition(agent.x, agent.y, 1, direction);
+                    PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
                     positions.push(agent);
                     cout<<"Visit due to vector: "<<agent.x<<" , "<<agent.y<<"\n";
+                    c++;
                 }
             }
         }
