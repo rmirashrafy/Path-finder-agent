@@ -246,41 +246,58 @@ int main() {
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){
             //check if the move is in the field
             
-            cout<<agent.x<<" , "<<agent.y<<"\n";
+            //cout<<agent.x<<" , "<<agent.y<<"\n";
             //100, 0, -1, 1(deadEnd), 3, vectors
 
-            if(PlayGround[tempMove.x][tempMove.y]==100){
+            if(PlayGround[tempMove.x][tempMove.y]==100){//Goal
                 //update agent position
                 // agent.x=tempMove.x;
                 // agent.y=tempMove.y;
                 //end the cicle
                 done = true;
-                cout<<"Goal!";  
+                cout<<"\n"<<"Goal!";  
                 }
-            else if(PlayGround[tempMove.x][tempMove.y]==3){
+            else if(PlayGround[tempMove.x][tempMove.y]==3){//Tunnel
                 //back move untill still in the feild
                 int c=0;
                 while (!positions.isEmpty() && c<3)
                 {
                     agent=positions.pop();
                     c++;
-                    cout<<"Tunnel back move";
+                    cout<<"Tunnel back move : ";
+                    cout<<agent.x<<" , "<<agent.y<<"\n";
                 }
             }
-            else if(PlayGround[tempMove.x][tempMove.y]==-1){
+            else if(PlayGround[tempMove.x][tempMove.y]==-1){//unvisited
                 //visit the sq
                 PlayGround[tempMove.x][tempMove.y]=1;
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
-                positions.push(agent); 
+                positions.push(agent);
+                cout<<"Visit: "<<agent.x<<" , "<<agent.y<<"\n";
             }
-            else if (PlayGround[tempMove.x][tempMove.y]==1){
-                //continue;
+            else if (PlayGround[tempMove.x][tempMove.y]==1){//already visited
+                continue;
             }
-            else if(PlayGround[tempMove.x][tempMove.y]==0){
-                // done=true;
-                // cout<<"No Path! ";
-                //continue;
+            else if(PlayGround[tempMove.x][tempMove.y]==0){//Call no path
+                done=true;
+                cout<<"No Path! ";
+                // continue;
+            }
+            else{//Vector
+                int vector = PlayGround[tempMove.x][tempMove.y];
+                agent.x=tempMove.x;
+                agent.y=tempMove.y;
+                positions.push(agent);
+                cout<<"Visit vector: "<<agent.x<<" , "<<agent.y<<"\n";
+                int steps = vector / 10;
+                int direction = vector % 10;
+                while ((agent.x<(LenghtOfPlayGround) && agent.x>=0)  &&  (agent.y<(LenghtOfPlayGround) && agent.y>=0))
+                {
+                    agent = EndPosition(agent.x, agent.y, 1, direction);
+                    positions.push(agent);
+                    cout<<"Visit due to vector: "<<agent.x<<" , "<<agent.y<<"\n";
+                }
             }
         }
     }
@@ -342,7 +359,7 @@ int main() {
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
                 text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
                 window.draw(text);
-            } else if (grid[i][j] != -1 && grid[i][j] != 0) { //&& grid[i][j] != 3 && grid[i][j] != 100
+            } else if (grid[i][j] != -1 && grid[i][j] != 0 ) { //&& grid[i][j] != 3 && grid[i][j] != 100
                 int value = grid[i][j];
                 int steps = value / 10;
                 int direction = value % 10 - 1; // Adjust for zero-based indexing
