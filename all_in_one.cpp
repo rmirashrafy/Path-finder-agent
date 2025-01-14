@@ -14,26 +14,6 @@ struct position
     int x;
     int y;
 };
-/*
-TODO : change the vector grid to array grid
-write xny end pos funcs
-    // Check if the action is even possible in the playground
-    // if ((endXpos < LengthOfPlayGround && endXpos >= 0) && (endYpos < LengthOfPlayGround && endYpos >= 0)) {}
-    TODO: what if the input is less than 6?
-
-    // Define the 8 possible directions as (dx, dy) pairs
-    position aroundPos[8][2] = {
-        {-1,  0},  // left
-        {-1, -1},  // up-left
-        {0, -1},  // up
-        {1, -1},  // up-right
-        {1,  1},  // down-right
-        {0,  1},  // down
-        {-1,  1}   // down-left
-    };
-    // position VectorMovement(){}//this func does a vector input move and return the end position
-// position TunnelMovement(){}//this func does a Tunnel move and return the end position
-*/
 
 /* in this int array :
     goal is set to 100
@@ -44,6 +24,7 @@ write xny end pos funcs
     vectors are a digit number where first digit is Direction(clockwise and in 8 directions) and 
     the second and so on are the amount of steps 
     agent has to be added in this file
+    visited tunnels and vectors are 100+3(or vector value)
 */
 
 class PositionStack {
@@ -133,26 +114,9 @@ position EndPosition(int startX, int startY, int steps, int Direction) {
     return endPosition;
 }
 
-position RandomMoveAround(int startX, int startY, int LenghtOfPlayGround){
-    //this func does a random move in one of the 8 directions and 1 step and return the end position
-    // pick one of the directions and end position
-    int randomDir = randomNumber(1, 8);
-    position endPosition;
-    endPosition = EndPosition(startX,startY,1,randomDir);
-    if((endPosition.x>=0 && endPosition.x<LenghtOfPlayGround) || (endPosition.y>=0 && endPosition.y<LenghtOfPlayGround)){
-        //check if the end position will ends in the play ground
-        return endPosition;
-    }
-    else{
-        endPosition.x = startX;
-        endPosition.y = startY;
-        return endPosition;
-    }
-    
-}
-
 // get color based on value
 sf::Color getColor(int value) {
+    if (value>100) return sf::Color::Green;
     switch (value) {
         case 0: return sf::Color::White;          // Start position
         case 1: return sf::Color::Green;          // Visited square
@@ -177,7 +141,7 @@ int main() {
     int PlayGround[LenghtOfPlayGround][LenghtOfPlayGround];
     int GoalPositionX = randomNumber(4,LenghtOfPlayGround);
     int GoalPositionY = randomNumber(4,LenghtOfPlayGround);
-    cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY;
+    cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY<<"\n";
 
     for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes to -1
     {
@@ -193,7 +157,7 @@ int main() {
     //Number of tunnels in [1-n] range
     int NumberOfTunnels;
     NumberOfTunnels = randomNumber(1,LenghtOfPlayGround);
-    cout<<NumberOfTunnels<<"\n";
+    cout<<"number of tunnels : "<<NumberOfTunnels<<"\n";
     int TempPosX,TempPosY,TempStatic;  
 
     for(int i = 0; i < NumberOfTunnels; i++) {//setting random tunnels
@@ -204,13 +168,7 @@ int main() {
             TempPosX = randomNumber(1,LenghtOfPlayGround-2);
             TempPosY = randomNumber(1,LenghtOfPlayGround-2);
         }
-        if(PlayGround[TempPosX][TempPosY]==100){
-            i--;
-        }
-        else{
-            PlayGround[TempPosX][TempPosY] = 3;
-        }
-        
+        PlayGround[TempPosX][TempPosY] = 3; 
     }
 
     for (int i = 0; i < LenghtOfPlayGround; i++) {//seting random vectors
@@ -235,12 +193,10 @@ int main() {
         }
     }
 
-    for (int i = 0; i < LenghtOfPlayGround; i++)
+    for (int i = 0; i < LenghtOfPlayGround; i++)//playgroung log
     {    
         for (int j = 0; j < LenghtOfPlayGround; j++)
         {
-            // PlayGround[agent.x][agent.y]=1;
-            // agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
             cout<<PlayGround[i][j]<<"  ";
         }
         cout<<"\n";
@@ -253,43 +209,32 @@ int main() {
     bool done=false;
     PositionStack positions(LenghtOfPlayGround*LenghtOfPlayGround);
     positions.push(agent);
-    int f=0;
 
     while (!done)
     {
-        // f++;
-        // if(f>250){
-        //     done=true;
-        // }
         //random move
         int tempDir= randomNumber(1,8);
         position tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
 
-        if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){
-            //check if the move is in the field
+        if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
-            cout<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
-            //100, 0, -1, 1(deadEnd), 3, vectors
+            cout<<"the selection destination (in the field): "<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
 
             if(PlayGround[tempMove.x][tempMove.y]==100){//Goal
                 //update agent position
-                // agent.x=tempMove.x;
-                // agent.y=tempMove.y;
-                //end the cicle
-                cout<<"\n"<<"Goal!"; 
-                done = true; 
-                }
-            else if(PlayGround[tempMove.x][tempMove.y]==3){//Tunnel
+                agent.x=tempMove.x;
+                agent.y=tempMove.y; 
+            }
+            else if((PlayGround[tempMove.x][tempMove.y]==3)){//Tunnel
                 //back move untill still in the feild
                 PlayGround[tempMove.x][tempMove.y]+=100;//mark the tunnel visited
-                cout<<"tunnel visited"<<"\n";
+                cout<<"tunnel visited in: ("<<tempMove.x<<","<<tempMove.y<<")\n";
                 int c=0;
                 while (!positions.isEmpty() && c<3)
                 {
                     agent=positions.pop();
                     c++;
-                    cout<<"Tunnel back move : ";
-                    cout<<agent.x<<" , "<<agent.y<<"\n";
+                    cout<<"Tunnel back move : "<<agent.x<<","<<agent.y<<"\n";
                 }
             }
             else if(PlayGround[tempMove.x][tempMove.y]==-1){//unvisited
@@ -298,10 +243,10 @@ int main() {
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
                 positions.push(agent);
-                cout<<"Visit: "<<agent.x<<" , "<<agent.y<<"\n";
+                cout<<"Visit: "<<agent.x<<","<<agent.y<<"\n";
             }
             else if (PlayGround[tempMove.x][tempMove.y]==1 || PlayGround[tempMove.x][tempMove.y]>100){//already visited
-                cout<<"the vector tunnel or sq is visited before "<<"\n";
+                cout<<"the vector tunnel or sq is visited before or (0,0)"<<"\n";
                 continue;
             }
             else if(PlayGround[tempMove.x][tempMove.y]==0){//Call no path
@@ -311,30 +256,40 @@ int main() {
             }
             else{//Vector
                 int vector = PlayGround[tempMove.x][tempMove.y];
-                PlayGround[tempMove.x][tempMove.y]+=100;//mark it visited
+                PlayGround[tempMove.x][tempMove.y]+=100;//mark it visited to know when a tunnel or vector was visited
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
                 positions.push(agent);
                 int steps = vector / 10;
                 int direction = vector % 10;
-                cout<<"Visit vector: "<<agent.x<<" , "<<agent.y<<" steps: "<<steps<<" dir: "<<direction<<"\n";
+                cout<<"Visit vector: ("<<agent.x<<","<<agent.y<<") steps: "<<steps<<" dir: "<<direction<<"\n";
                 for (int c = 0; c < steps; c++)
                 {
-                    position tempMove = EndPosition(agent.x, agent.y, 1, direction);
-                    if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0))
+                    position tempMoveVector = EndPosition(agent.x, agent.y, 1, direction);
+                    if ((tempMoveVector.x<(LenghtOfPlayGround) && tempMoveVector.x>=0)  &&  (tempMoveVector.y<(LenghtOfPlayGround) && tempMoveVector.y>=0))
                     {
-                        agent = tempMove;
+                        agent = tempMoveVector;
                         if(PlayGround[agent.x][agent.y]==-1){
                             PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
                         }
-                        // else if(PlayGround[agent.x][agent.y]!=0){//tunnel and vector
-                        //     PlayGround[agent.x][agent.y]+=100;//to know when a tunnel or vector was visited
-                        // }
+                        else if(PlayGround[agent.x][agent.y]==100){//tunnel and vector
+                            done=true;
+                            cout<<"\n"<<"Goal!";
+                            break;
+                        }
                         positions.push(agent);
-                        cout<<"Visit due to vector: "<<agent.x<<" , "<<agent.y<<"\n";
+                        cout<<"Visit due to vector: ("<<agent.x<<","<<agent.y<<") \n";
                     }
                 }
             }
+        }
+
+        if (PlayGround[agent.x][agent.y]==100)
+        {
+            //end the cicle
+            cout<<"\n"<<"Goal!";
+            done = true;
+            break;
         }
     }
     
@@ -396,7 +351,7 @@ int main() {
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
                 text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
                 window.draw(text);
-            } else if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 1) { //&& grid[i][j] != 3 && grid[i][j] != 100
+            } else if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 1 ) { //&& grid[i][j] != 3 && grid[i][j] != 100
                 int value = grid[i][j];
                 value = value%100;
                 int steps = value / 10;
