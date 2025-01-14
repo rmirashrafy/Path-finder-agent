@@ -178,6 +178,7 @@ int main() {
     int PlayGround[LenghtOfPlayGround][LenghtOfPlayGround];
     int GoalPositionX = randomNumber(4,LenghtOfPlayGround);
     int GoalPositionY = randomNumber(4,LenghtOfPlayGround);
+    cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY;
 
     for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes to -1
     {
@@ -204,7 +205,13 @@ int main() {
             TempPosX = randomNumber(1,LenghtOfPlayGround-2);
             TempPosY = randomNumber(1,LenghtOfPlayGround-2);
         }
-        PlayGround[TempPosX][TempPosY] = 3;
+        if(PlayGround[TempPosX][TempPosY]==100){
+            i--;
+        }
+        else{
+            PlayGround[TempPosX][TempPosY] = 3;
+        }
+        
     }
 
     for (int i = 0; i < LenghtOfPlayGround; i++) {//seting random vectors
@@ -229,6 +236,17 @@ int main() {
         }
     }
 
+    for (int i = 0; i < LenghtOfPlayGround; i++)
+    {    
+        for (int j = 0; j < LenghtOfPlayGround; j++)
+        {
+            // PlayGround[agent.x][agent.y]=1;
+            // agent = RandomMoveAround(agent.x,agent.y,LenghtOfPlayGround);
+            cout<<PlayGround[i][j]<<"  ";
+        }
+        cout<<"\n";
+    }
+
     //-------------------------agent-decisions--------------------------
     position agent;
     agent.x=0;
@@ -236,9 +254,14 @@ int main() {
     bool done=false;
     PositionStack positions(LenghtOfPlayGround*LenghtOfPlayGround);
     positions.push(agent);
+    int f=0;
 
     while (!done)
     {
+        // f++;
+        // if(f>250){
+        //     done=true;
+        // }
         //random move
         int tempDir= randomNumber(1,8);
         position tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
@@ -246,7 +269,7 @@ int main() {
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){
             //check if the move is in the field
             
-            //cout<<agent.x<<" , "<<agent.y<<"\n";
+            cout<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
             //100, 0, -1, 1(deadEnd), 3, vectors
 
             if(PlayGround[tempMove.x][tempMove.y]==100){//Goal
@@ -254,11 +277,13 @@ int main() {
                 // agent.x=tempMove.x;
                 // agent.y=tempMove.y;
                 //end the cicle
-                done = true;
-                cout<<"\n"<<"Goal!";  
+                cout<<"\n"<<"Goal!"; 
+                done = true; 
                 }
             else if(PlayGround[tempMove.x][tempMove.y]==3){//Tunnel
                 //back move untill still in the feild
+                PlayGround[tempMove.x][tempMove.y]+=100;//mark the tunnel visited
+                cout<<"tunnel visited"<<"\n";
                 int c=0;
                 while (!positions.isEmpty() && c<3)
                 {
@@ -276,7 +301,8 @@ int main() {
                 positions.push(agent);
                 cout<<"Visit: "<<agent.x<<" , "<<agent.y<<"\n";
             }
-            else if (PlayGround[tempMove.x][tempMove.y]==1){//already visited
+            else if (PlayGround[tempMove.x][tempMove.y]==1 || PlayGround[tempMove.x][tempMove.y]>100){//already visited
+                cout<<"the vector tunnel or sq is visited before "<<"\n";
                 continue;
             }
             else if(PlayGround[tempMove.x][tempMove.y]==0){//Call no path
@@ -286,20 +312,28 @@ int main() {
             }
             else{//Vector
                 int vector = PlayGround[tempMove.x][tempMove.y];
+                PlayGround[tempMove.x][tempMove.y]+=100;//mark it visited
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
                 positions.push(agent);
-                cout<<"Visit vector: "<<agent.x<<" , "<<agent.y<<"\n";
                 int steps = vector / 10;
                 int direction = vector % 10;
-                int c=0;
-                while (((agent.x<(LenghtOfPlayGround) && agent.x>=0)  &&  (agent.y<(LenghtOfPlayGround) && agent.y>=0)) && c<steps)
+                cout<<"Visit vector: "<<agent.x<<" , "<<agent.y<<" steps: "<<steps<<" dir: "<<direction<<"\n";
+                for (int c = 0; c < steps; c++)
                 {
-                    agent = EndPosition(agent.x, agent.y, 1, direction);
-                    PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
-                    positions.push(agent);
-                    cout<<"Visit due to vector: "<<agent.x<<" , "<<agent.y<<"\n";
-                    c++;
+                    position tempMove = EndPosition(agent.x, agent.y, 1, direction);
+                    if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0))
+                    {
+                        agent = tempMove;
+                        if(PlayGround[agent.x][agent.y]==-1){
+                            PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
+                        }
+                        // else if(PlayGround[agent.x][agent.y]!=0){//tunnel and vector
+                        //     PlayGround[agent.x][agent.y]+=100;//to know when a tunnel or vector was visited
+                        // }
+                        positions.push(agent);
+                        cout<<"Visit due to vector: "<<agent.x<<" , "<<agent.y<<"\n";
+                    }
                 }
             }
         }
@@ -326,7 +360,7 @@ int main() {
 
     window.clear(sf::Color::White);
     const auto& grid = PlayGround;
-    const char* arrows[8] =  {"←","←↑","↑","↑→","→","↓→","↓","←↓"};
+    const char* arrows[8] =  {"↑","↑→","→","↓→","↓","←↓","←","←↑"};
     // const char* arrows[8] =  {"\u2190", "\u2196", "\u2191", "\u2197", "\u2192", "\u2198", "\u2193", "\u2199"};
     // const char* arrows[8] =  {"1", "2", "3", "4", "5", "6", "7", "8"};
 
@@ -338,9 +372,10 @@ int main() {
             square.setOutlineThickness(2);
             square.setOutlineColor(sf::Color::Black);
             window.draw(square);
+            //grid[i][j]=grid[i][j]%100;
 
             // Add text for tunnels and goal
-            if (grid[i][j] == 3) {
+            if (grid[i][j] == 3 || grid[i][j] == 103) {//visited and unvisited tunnel
                 // Display 'T' for tunnel
                 sf::Text text;
                 text.setFont(font);
@@ -362,8 +397,9 @@ int main() {
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
                 text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
                 window.draw(text);
-            } else if (grid[i][j] != -1 && grid[i][j] != 0 ) { //&& grid[i][j] != 3 && grid[i][j] != 100
+            } else if (grid[i][j] != -1 && grid[i][j] != 0 && grid[i][j] != 1) { //&& grid[i][j] != 3 && grid[i][j] != 100
                 int value = grid[i][j];
+                value = value%100;
                 int steps = value / 10;
                 int direction = value % 10 - 1; // Adjust for zero-based indexing
                 const char* arrow = arrows[direction]; // Use const char* for arrow symbol
