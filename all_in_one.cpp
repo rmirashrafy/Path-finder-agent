@@ -14,7 +14,6 @@ struct position
     int x;
     int y;
 };
-
 /*
 TODO : change the vector grid to array grid
 write xny end pos funcs
