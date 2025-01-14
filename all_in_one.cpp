@@ -294,10 +294,15 @@ int main() {
     }
     
     // Size of window and squares
-    int squareSize = 90; //TODO : the sq size must create a fitting window in screen
-    int windowSize = LenghtOfPlayGround * squareSize;
+    int screenWidth = sf::VideoMode::getDesktopMode().width; 
+    int screenHeight = sf::VideoMode::getDesktopMode().height; 
+    int windowWidth = screenWidth / 2; 
+    int windowHeight = screenHeight ; 
+    int squareSize = std::min(windowWidth, windowHeight) / LenghtOfPlayGround;
+    // int squareSize = 90; //TODO : the sq size must create a fitting window in screen
+    // int windowSize = LenghtOfPlayGround * squareSize;
     // Main window
-    sf::RenderWindow window(sf::VideoMode(windowSize, windowSize), "Playground Grid");
+    sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Playground Grid");
     // font
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
@@ -334,7 +339,7 @@ int main() {
                 sf::Text text;
                 text.setFont(font);
                 text.setString("T");
-                text.setCharacterSize(24);
+                text.setCharacterSize(squareSize / 2);
                 text.setFillColor(sf::Color::Black);
                 sf::FloatRect textRect = text.getLocalBounds();
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
@@ -345,7 +350,7 @@ int main() {
                 sf::Text text;
                 text.setFont(font);
                 text.setString("G");
-                text.setCharacterSize(24);
+                text.setCharacterSize(squareSize / 2);
                 text.setFillColor(sf::Color::Black);
                 sf::FloatRect textRect = text.getLocalBounds();
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
@@ -367,7 +372,7 @@ int main() {
                 // arrowText += L" * " + std::to_wstring(steps);
                 // text.setString(arrowText);
 
-                text.setCharacterSize(24);
+                text.setCharacterSize(squareSize / 4);
                 text.setFillColor(sf::Color::Black);
                 sf::FloatRect textRect = text.getLocalBounds();
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
