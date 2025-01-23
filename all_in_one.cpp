@@ -8,7 +8,7 @@
 #include <string.h>
 
 using namespace std;
- 
+
 struct position
 {
     int x;
@@ -230,7 +230,9 @@ int main() {
             if(PlayGround[tempMove.x][tempMove.y]==100){//Goal
                 //update agent position
                 agent.x=tempMove.x;
-                agent.y=tempMove.y; 
+                agent.y=tempMove.y;
+                cout<<"goal";
+                break;
             }
             else if((PlayGround[tempMove.x][tempMove.y]==3)){//Tunnel
                 //back move untill still in the feild
@@ -280,15 +282,16 @@ int main() {
                             // PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
                             cout<<" jump : "<<agent.x<<" , "<<agent.y;
                         }
-                        else if(PlayGround[agent.x][agent.y]==100){//tunnel and vector
-                            done=true;
-                            cout<<"\n"<<"Goal!";
-                            break;
-                        }
+                        // else if(PlayGround[agent.x][agent.y]==100){//tunnel and vector
+                        //     done=true;
+                        //     cout<<"\n"<<"Goal!";
+                        //     break;
+                        // }
                         positions.push(agent);
                         cout<<"Visit due to vector: ("<<agent.x<<","<<agent.y<<") \n";
                     }
                 }
+                //here is where the last vector ends and the landing sq shoild be checked for another decision
             }
         }
 
