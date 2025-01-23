@@ -8,7 +8,7 @@
 #include <string.h>
 
 using namespace std;
-
+ 
 struct position
 {
     int x;
