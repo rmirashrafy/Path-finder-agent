@@ -209,9 +209,16 @@ int main() {
     bool done=false;
     PositionStack positions(LenghtOfPlayGround*LenghtOfPlayGround);
     positions.push(agent);
+    int f=0;
 
     while (!done)
     {
+        f++;
+        if (f>1500)
+        {
+            break;
+        }
+        
         //random move
         int tempDir= randomNumber(1,8);
         position tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
@@ -270,7 +277,8 @@ int main() {
                     {
                         agent = tempMoveVector;
                         if(PlayGround[agent.x][agent.y]==-1){
-                            PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
+                            // PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
+                            cout<<" jump : "<<agent.x<<" , "<<agent.y;
                         }
                         else if(PlayGround[agent.x][agent.y]==100){//tunnel and vector
                             done=true;
