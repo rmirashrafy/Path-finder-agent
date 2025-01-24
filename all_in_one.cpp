@@ -139,8 +139,8 @@ int main() {
 
     //Random goal position in (4-n] range
     int PlayGround[LenghtOfPlayGround][LenghtOfPlayGround];
-    int GoalPositionX = randomNumber(4,LenghtOfPlayGround);
-    int GoalPositionY = randomNumber(4,LenghtOfPlayGround);
+    int GoalPositionX = randomNumber(4,LenghtOfPlayGround-1);
+    int GoalPositionY = randomNumber(4,LenghtOfPlayGround-1);
     cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY<<"\n";
 
     for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes to -1
@@ -213,6 +213,7 @@ int main() {
     
     position tempMove;
     int tempDir;
+    bool NewRandMove=true;
 
     while (!done)
     {
@@ -223,8 +224,10 @@ int main() {
         }
         
         //random move
-        tempDir= randomNumber(1,8);
-        tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
+        if(NewRandMove){
+            tempDir= randomNumber(1,8);
+            tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
+        }
 
 
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
@@ -249,6 +252,7 @@ int main() {
                     c++;
                     cout<<"Tunnel back move : "<<agent.x<<","<<agent.y<<"\n";
                 }
+                NewRandMove=true;
             }
             else if(PlayGround[tempMove.x][tempMove.y]==-1){//unvisited
                 //visit the sq
@@ -257,6 +261,7 @@ int main() {
                 agent.y=tempMove.y;
                 positions.push(agent);
                 cout<<"Visit: "<<agent.x<<","<<agent.y<<"\n";
+                NewRandMove=true;
             }
             else if (PlayGround[tempMove.x][tempMove.y]==1 || PlayGround[tempMove.x][tempMove.y]>100){//already visited
                 cout<<"the vector tunnel or sq is visited before or (0,0)"<<"\n";
@@ -289,8 +294,24 @@ int main() {
                 }
                 positions.push(agent);
                 //here is where the last vector ends and the landing sq shoild be checked for another decision
-                // if((PlayGround[agent.x][agent.y]==-1) && (PlayGround[agent.x][agent.y]==) (PlayGround[agent.x][agent.y]==-1) )
-                // PlayGround[agent.x][agent.y]=1;
+                if(PlayGround[agent.x][agent.y]==1){
+                    NewRandMove=true;
+                }
+                if(PlayGround[agent.x][agent.y]==-1) //&& (PlayGround[agent.x][agent.y]==) (PlayGround[agent.x][agent.y]==-1) )
+                {
+                    PlayGround[agent.x][agent.y]=1;
+                    NewRandMove=true;
+                }
+                else if(PlayGround[agent.x][agent.y]==100){
+                    cout<<"Goal!";
+                    break;
+                    done=true;
+                }
+                else{
+                    NewRandMove=false;
+                    tempMove= agent;
+                }
+
             }
         }
 
