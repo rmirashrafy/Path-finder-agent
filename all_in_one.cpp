@@ -274,12 +274,15 @@ int main() {
         }
         // ; // No surrounding squares with value 1
         //-------------------------------------------------
-        
+
         //random move
         if(NewRandMove){
             tempDir= randomNumber(1,8);
             tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
         }
+
+        // change the move if its repetetive
+        // if(premove==tempMove)
 
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
@@ -344,6 +347,7 @@ int main() {
                         }
                     }
                 }
+                NewRandMove=true;
                 positions.push(agent);
                 //here is where the last vector ends and the landing sq shoild be checked for another decision
                 if(PlayGround[agent.x][agent.y]==1){
@@ -355,6 +359,7 @@ int main() {
                     NewRandMove=true;
                 }
                 else if(PlayGround[agent.x][agent.y]==100){
+                    PlayGround[agent.x][agent.y]==1000;
                     cout<<"Goal!";
                     break;
                     done=true;
@@ -364,7 +369,7 @@ int main() {
                     NewRandMove=true;//this is a problem if it lands from a vector to a already visited vector nothing happens
                 }
                 else{
-                    NewRandMove=false;
+                    // NewRandMove=false;
                     tempMove= agent;
                 }
 
