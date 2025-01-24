@@ -119,7 +119,7 @@ int main() {
     int PlayGround[LenghtOfPlayGround][LenghtOfPlayGround];
     int GoalPositionX = randomNumber(4,LenghtOfPlayGround-1);
     int GoalPositionY = randomNumber(4,LenghtOfPlayGround-1);
-    cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY<<"\n";
+    // cout<<"GoalPositionX: "<<GoalPositionX<<"\t GoalPositionY: "<<GoalPositionY<<"\n";
 
     for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes to -1
     {
@@ -135,7 +135,7 @@ int main() {
     //Number of tunnels in [1-n] range
     int NumberOfTunnels;
     NumberOfTunnels = randomNumber(1,LenghtOfPlayGround);
-    cout<<"number of tunnels : "<<NumberOfTunnels<<"\n";
+    // cout<<"number of tunnels : "<<NumberOfTunnels<<"\n";
     int TempPosX,TempPosY,TempStatic;  
 
     for(int i = 0; i < NumberOfTunnels; i++) {//setting random tunnels
@@ -171,14 +171,14 @@ int main() {
         }
     }
 
-    for (int i = 0; i < LenghtOfPlayGround; i++)//playgroung log
-    {    
-        for (int j = 0; j < LenghtOfPlayGround; j++)
-        {
-            cout<<PlayGround[i][j]<<"  ";
-        }
-        cout<<"\n";
-    }
+    // for (int i = 0; i < LenghtOfPlayGround; i++)//playgroung log
+    // {    
+    //     for (int j = 0; j < LenghtOfPlayGround; j++)
+    //     {
+    //         cout<<PlayGround[i][j]<<"  ";
+    //     }
+    //     cout<<"\n";
+    // }
 
     //-------------------------agent-decisions--------------------------
     position agent;
@@ -221,13 +221,18 @@ int main() {
         }
 
         if(isalsovisited==isinthefield){//call no path
-            
+            PositionStack copyStack(LenghtOfPlayGround*LenghtOfPlayGround);
             while(!positions.isEmpty()){
-                position tempBACKpos= positions.pop();
+                copyStack.push(positions.pop());
+            }
+            while(!copyStack.isEmpty()){
+                position tempBACKpos = copyStack.pop();
                 cout<<"["<<tempBACKpos.x<<","<<tempBACKpos.y<<"]";
             }
+
             cout<<"...No Path\n";
             agent.x=0;agent.y=0;
+            positions.push(agent);
 
             for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes back to unvisited
             {
@@ -237,7 +242,6 @@ int main() {
                     if(PlayGround[i][j]>100){PlayGround[i][j] -= 100;}
                 }
             }
-
         }
         //-------------------------------------------------
 
@@ -249,26 +253,26 @@ int main() {
 
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
-            cout<<"the selection destination (in the field): "<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
+            // cout<<"the selection destination (in the field): "<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
 
             if(PlayGround[tempMove.x][tempMove.y]==100){//Goal
                 //update agent position
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
-                cout<<"goal";
+                // cout<<"goal";
                 PlayGround[tempMove.x][tempMove.y]=1000;
                 break;
             }
             else if((PlayGround[tempMove.x][tempMove.y]==3)){//Tunnel
                 //back move untill still in the feild
                 PlayGround[tempMove.x][tempMove.y]+=100;//mark the tunnel visited
-                cout<<"tunnel visited in: ("<<tempMove.x<<","<<tempMove.y<<")\n";
+                // cout<<"tunnel visited in: ("<<tempMove.x<<","<<tempMove.y<<")\n";
                 int c=0;
                 while (!positions.isEmpty() && c<3)
                 {
                     agent=positions.pop();
                     c++;
-                    cout<<"Tunnel back move : "<<agent.x<<","<<agent.y<<"\n";
+                    // cout<<"Tunnel back move : "<<agent.x<<","<<agent.y<<"\n";
                 }
                 NewRandMove=true;
             }
@@ -278,11 +282,11 @@ int main() {
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
                 positions.push(agent);
-                cout<<"Visit: "<<agent.x<<","<<agent.y<<"\n";
+                // cout<<"Visit: "<<agent.x<<","<<agent.y<<"\n";
                 NewRandMove=true;
             }
             else if (PlayGround[tempMove.x][tempMove.y]==1 || PlayGround[tempMove.x][tempMove.y]>100){//already visited
-                cout<<"the vector tunnel or sq is visited before or (0,0)"<<"\n";
+                // cout<<"the vector tunnel or sq is visited before or (0,0)"<<"\n";
                 continue;
             }
             else if(PlayGround[tempMove.x][tempMove.y]==0){//Call no path
@@ -298,16 +302,16 @@ int main() {
                 positions.push(agent);
                 int steps = vector / 10;
                 int direction = vector % 10;
-                cout<<"Visit vector: ("<<agent.x<<","<<agent.y<<") steps: "<<steps<<" dir: "<<direction<<"\n";
+                // cout<<"Visit vector: ("<<agent.x<<","<<agent.y<<") steps: "<<steps<<" dir: "<<direction<<"\n";
                 for (int c = 0; c < steps; c++)
                 {
                     position tempMoveVector = EndPosition(agent.x, agent.y, 1, direction);
                     if ((tempMoveVector.x<(LenghtOfPlayGround) && tempMoveVector.x>=0)  &&  (tempMoveVector.y<(LenghtOfPlayGround) && tempMoveVector.y>=0))
                     {
                         agent = tempMoveVector;
-                        if(PlayGround[agent.x][agent.y]==-1){
-                            cout<<" jump of: "<<agent.x<<" , "<<agent.y;
-                        }
+                        // if(PlayGround[agent.x][agent.y]==-1){
+                            // cout<<" jump of: "<<agent.x<<" , "<<agent.y;
+                        // }
                     }
                 }
                 NewRandMove=true;
@@ -323,7 +327,7 @@ int main() {
                 }
                 else if(PlayGround[agent.x][agent.y]==100){
                     PlayGround[agent.x][agent.y]==1000;
-                    cout<<"Goal!";
+                    // cout<<"Goal!";
                     break;
                     done=true;
                 }
@@ -343,11 +347,22 @@ int main() {
         {
             //end the cicle
             PlayGround[agent.x][agent.y]==1000;
-            cout<<"\n"<<"Goal!";
+            // cout<<"\n"<<"Goal!";
             done = true;
             break;
         }
     }
+
+    PositionStack copyStack(LenghtOfPlayGround*LenghtOfPlayGround);
+    
+    while(!positions.isEmpty()){
+        copyStack.push(positions.pop());
+    }
+    while(!copyStack.isEmpty()){
+        position tempBACKpos = copyStack.pop();
+        cout<<"["<<tempBACKpos.x<<","<<tempBACKpos.y<<"]";
+    }
+    cout<<"...Goal!\n";
     
     // Size of window and squares
     int screenWidth = sf::VideoMode::getDesktopMode().width; 
