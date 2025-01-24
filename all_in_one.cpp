@@ -169,6 +169,7 @@ int main() {
         while((TempPosX==0 && TempPosY==0) || (GoalPositionX==TempPosX && GoalPositionY==TempPosY)){
             TempPosX = randomNumber(1,LenghtOfPlayGround-2);
             TempPosY = randomNumber(1,LenghtOfPlayGround-2);
+            cout<<"is it even working"<<"\n";
         }
         PlayGround[TempPosX][TempPosY] = 3; 
     }
@@ -219,12 +220,6 @@ int main() {
 
     while (!done)
     {
-        f++;
-        if (f>1500)
-        {
-            break;
-        }
-        
         //random move
         if(NewRandMove){
             tempDir= randomNumber(1,8);
