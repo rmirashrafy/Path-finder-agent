@@ -223,9 +223,14 @@ int main() {
     bool NewRandMove=true;
     int x,y;
     bool isallvisited=false;
+    int c=0;
 
     while (!done)
     {
+        c+=1;
+        if(c>1500){
+            break;
+        }
         //call no path--------------------------------------
         x = agent.x;
         y = agent.y;
@@ -241,7 +246,7 @@ int main() {
 
             if (IsInTheField(newX, newY, LenghtOfPlayGround)) {
                 isinthefield+=1;
-                if (PlayGround[newX][newY] == 1) {
+                if ( (PlayGround[newX][newY] == 1) || (PlayGround[newX][newY] > 100) ) {
                     // Found a square with value 1
                     isalsovisited+=1;
                 }
@@ -249,8 +254,8 @@ int main() {
         }
 
         if(isalsovisited==isinthefield){//call no path
-            cout<<"no path";
-            break;
+            // cout<<"no path";
+            // break;
         }
         // ; // No surrounding squares with value 1
         //-------------------------------------------------
