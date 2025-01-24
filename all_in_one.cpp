@@ -307,6 +307,10 @@ int main() {
                     break;
                     done=true;
                 }
+                else if(PlayGround[agent.x][agent.y]>100){
+                    // PlayGround[agent.x][agent.y]-=100;
+                    NewRandMove=true;//this is a problem if it lands from a vector to a already visited vector nothing happens
+                }
                 else{
                     NewRandMove=false;
                     tempMove= agent;
