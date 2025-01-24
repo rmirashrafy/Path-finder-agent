@@ -246,7 +246,7 @@ int main() {
 
             if (IsInTheField(newX, newY, LenghtOfPlayGround)) {
                 isinthefield+=1;
-                if ( (PlayGround[newX][newY] == 1) || (PlayGround[newX][newY] > 100) ) {
+                if ( (PlayGround[newX][newY] == 1) || (PlayGround[newX][newY] > 100) || ( PlayGround[newX][newY]==0 ) ) {
                     // Found a square with value 1
                     isalsovisited+=1;
                 }
@@ -256,6 +256,21 @@ int main() {
         if(isalsovisited==isinthefield){//call no path
             // cout<<"no path";
             // break;
+            while(!positions.isEmpty()){
+                position tempBACKpos= positions.pop();
+                cout<<"["<<tempBACKpos.x<<","<<tempBACKpos.y<<"]";
+            }
+            cout<<"...No Path";
+            agent.x=0;agent.y=0;
+
+            for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes back to unvisited
+            {
+                for (int j = 0; j < LenghtOfPlayGround; j++)
+                {
+                    if(PlayGround[i][j]==1){PlayGround[i][j] = -1;}
+                }
+            }
+
         }
         // ; // No surrounding squares with value 1
         //-------------------------------------------------
