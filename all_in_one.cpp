@@ -9,6 +9,10 @@
 
 using namespace std;
 
+bool IsInTheField(int x, int y, int n) {
+    return (x >= 0 && x < n) && (y >= 0 && y < n);
+}
+
 struct position
 {
     int x;
@@ -217,9 +221,40 @@ int main() {
     position tempMove;
     int tempDir;
     bool NewRandMove=true;
+    int x,y;
+    bool isallvisited=false;
 
     while (!done)
     {
+        //call no path--------------------------------------
+        x = agent.x;
+        y = agent.y;
+        
+        // Define the 8 possible directions around the agent
+        int dx[8] = {-1, -1, -1, 0, 0, 1, 1, 1};
+        int dy[8] = {-1, 0, 1, -1, 1, -1, 0, 1};
+        int isinthefield=0;
+        int isalsovisited=0;
+        for (int i = 0; i < 8; i++) {
+            int newX = x + dx[i];
+            int newY = y + dy[i];
+
+            if (IsInTheField(newX, newY, LenghtOfPlayGround)) {
+                isinthefield+=1;
+                if (PlayGround[newX][newY] == 1) {
+                    // Found a square with value 1
+                    isalsovisited+=1;
+                }
+            }
+        }
+
+        if(isalsovisited==isinthefield){//call no path
+            cout<<"no path";
+            break;
+        }
+        // ; // No surrounding squares with value 1
+        //-------------------------------------------------
+        
         //random move
         if(NewRandMove){
             tempDir= randomNumber(1,8);
