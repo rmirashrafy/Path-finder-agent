@@ -210,6 +210,9 @@ int main() {
     PositionStack positions(LenghtOfPlayGround*LenghtOfPlayGround);
     positions.push(agent);
     int f=0;
+    
+    position tempMove;
+    int tempDir;
 
     while (!done)
     {
@@ -220,8 +223,9 @@ int main() {
         }
         
         //random move
-        int tempDir= randomNumber(1,8);
-        position tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
+        tempDir= randomNumber(1,8);
+        tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
+
 
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
@@ -279,19 +283,14 @@ int main() {
                     {
                         agent = tempMoveVector;
                         if(PlayGround[agent.x][agent.y]==-1){
-                            // PlayGround[agent.x][agent.y]=1;//what if the next step of a vector was a tunnel?
-                            cout<<" jump : "<<agent.x<<" , "<<agent.y;
+                            cout<<" jump of: "<<agent.x<<" , "<<agent.y;
                         }
-                        // else if(PlayGround[agent.x][agent.y]==100){//tunnel and vector
-                        //     done=true;
-                        //     cout<<"\n"<<"Goal!";
-                        //     break;
-                        // }
-                        positions.push(agent);
-                        cout<<"Visit due to vector: ("<<agent.x<<","<<agent.y<<") \n";
                     }
                 }
+                positions.push(agent);
                 //here is where the last vector ends and the landing sq shoild be checked for another decision
+                // if((PlayGround[agent.x][agent.y]==-1) && (PlayGround[agent.x][agent.y]==) (PlayGround[agent.x][agent.y]==-1) )
+                // PlayGround[agent.x][agent.y]=1;
             }
         }
 
