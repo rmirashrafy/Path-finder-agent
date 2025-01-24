@@ -25,6 +25,7 @@ struct position
     the second and so on are the amount of steps 
     agent has to be added in this file
     visited tunnels and vectors are 100+3(or vector value)
+    visited goal 1000
 */
 
 class PositionStack {
@@ -122,6 +123,7 @@ sf::Color getColor(int value) {
         case 1: return sf::Color::Green;          // Visited square
         case 3: return sf::Color::White;         // Tunnel
         case 100: return sf::Color::White;         // Goal
+        case 1000: return sf::Color::Green;  //visited goal
         case -1: return sf::Color(205, 193, 180); // Unvisited square
         default: return sf::Color(238, 228, 218); // Other
     }
@@ -229,7 +231,6 @@ int main() {
             tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
         }
 
-
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
             cout<<"the selection destination (in the field): "<<agent.x<<" , "<<agent.y<<" , "<<PlayGround[tempMove.x][tempMove.y]<<" "<<tempDir<<" \n ";
@@ -239,6 +240,7 @@ int main() {
                 agent.x=tempMove.x;
                 agent.y=tempMove.y;
                 cout<<"goal";
+                PlayGround[tempMove.x][tempMove.y]=1000;
                 break;
             }
             else if((PlayGround[tempMove.x][tempMove.y]==3)){//Tunnel
@@ -380,7 +382,7 @@ int main() {
                 text.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top + textRect.height / 2.0f);
                 text.setPosition(j * squareSize + squareSize / 2, i * squareSize + squareSize / 2);
                 window.draw(text);
-            } else if (grid[i][j] == 100) {
+            } else if (grid[i][j] == 100 || grid[i][j] == 1000) {
                 // Display 'G' for goal
                 sf::Text text;
                 text.setFont(font);
