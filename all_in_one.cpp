@@ -26,8 +26,6 @@ struct position
     unvisited sq is -1
     visited sq is 1
     vectors are a digit number where first digit is Direction(clockwise and in 8 directions) and 
-    the second and so on are the amount of steps 
-    agent has to be added in this file
     visited tunnels and vectors are 100+3(or vector value)
     visited goal 1000
 */
@@ -45,11 +43,6 @@ public:
         top = -1;
     }
 
-    ~PositionStack() {
-        delete[] arr;
-    }
-
-    // Function to add a position `pos` to the stack
     void push(position pos) {
         if (isFull()) {
             cout << "Overflow: Stack is full\n";
@@ -58,35 +51,14 @@ public:
         arr[++top] = pos;
     }
 
-    // Function to pop the top position from the stack
     position pop() {
-        if (isEmpty()) {
-            cout << "Underflow: Stack is empty\n";
-            return {-1, -1}; // Return an invalid position
-        }
         return arr[top--];
     }
 
-    // Function to return the top position of the stack
-    position peek() {
-        if (isEmpty()) {
-            cout << "Underflow: Stack is empty\n";
-            return {-1, -1}; // Return an invalid position
-        }
-        return arr[top];
-    }
-
-    // Function to return the size of the stack
-    int size() {
-        return top + 1;
-    }
-
-    // Function to check if the stack is empty
     bool isEmpty() {
         return top == -1;
     }
 
-    // Function to check if the stack is full
     bool isFull() {
         return top == capacity - 1;
     }
@@ -173,7 +145,6 @@ int main() {
         while((TempPosX==0 && TempPosY==0) || (GoalPositionX==TempPosX && GoalPositionY==TempPosY)){
             TempPosX = randomNumber(1,LenghtOfPlayGround-2);
             TempPosY = randomNumber(1,LenghtOfPlayGround-2);
-            cout<<"is it even working"<<"\n";
         }
         PlayGround[TempPosX][TempPosY] = 3; 
     }
@@ -227,11 +198,8 @@ int main() {
 
     while (!done)
     {
-        c+=1;
-        if(c>1500){
-            break;
-        }
-        //call no path--------------------------------------
+
+        //-------------------------------------call no path--------------------------------------
         x = agent.x;
         y = agent.y;
         
@@ -247,20 +215,18 @@ int main() {
             if (IsInTheField(newX, newY, LenghtOfPlayGround)) {
                 isinthefield+=1;
                 if ( (PlayGround[newX][newY] == 1) || (PlayGround[newX][newY] > 100) || ( PlayGround[newX][newY]==0 ) ) {
-                    // Found a square with value 1
                     isalsovisited+=1;
                 }
             }
         }
 
         if(isalsovisited==isinthefield){//call no path
-            // cout<<"no path";
-            // break;
+            
             while(!positions.isEmpty()){
                 position tempBACKpos= positions.pop();
                 cout<<"["<<tempBACKpos.x<<","<<tempBACKpos.y<<"]";
             }
-            cout<<"...No Path";
+            cout<<"...No Path\n";
             agent.x=0;agent.y=0;
 
             for (int i = 0; i < LenghtOfPlayGround; i++)//setting all indexes back to unvisited
@@ -268,11 +234,11 @@ int main() {
                 for (int j = 0; j < LenghtOfPlayGround; j++)
                 {
                     if(PlayGround[i][j]==1){PlayGround[i][j] = -1;}
+                    if(PlayGround[i][j]>100){PlayGround[i][j] -= 100;}
                 }
             }
 
         }
-        // ; // No surrounding squares with value 1
         //-------------------------------------------------
 
         //random move
@@ -280,9 +246,6 @@ int main() {
             tempDir= randomNumber(1,8);
             tempMove= EndPosition(agent.x, agent.y, 1, tempDir);
         }
-
-        // change the move if its repetetive
-        // if(premove==tempMove)
 
         if ((tempMove.x<(LenghtOfPlayGround) && tempMove.x>=0)  &&  (tempMove.y<(LenghtOfPlayGround) && tempMove.y>=0)){//check if the move is in the field
             
@@ -379,6 +342,7 @@ int main() {
         if (PlayGround[agent.x][agent.y]==100)
         {
             //end the cicle
+            PlayGround[agent.x][agent.y]==1000;
             cout<<"\n"<<"Goal!";
             done = true;
             break;
@@ -391,11 +355,13 @@ int main() {
     int windowWidth = screenWidth / 2; 
     int windowHeight = screenHeight ; 
     int squareSize = std::min(windowWidth, windowHeight) / LenghtOfPlayGround;
-    // int squareSize = 90; //TODO : the sq size must create a fitting window in screen
+    // int squareSize = 90; 
+    //TODO : the sq size must create a fitting window in screen
     // int windowSize = LenghtOfPlayGround * squareSize;
-    // Main window
+
+    // window
     sf::RenderWindow window(sf::VideoMode(windowWidth, windowHeight), "Playground Grid");
-    // font
+    
     sf::Font font;
     if (!font.loadFromFile("arial.ttf")) {
         std::cerr << "Error loading font\n";
