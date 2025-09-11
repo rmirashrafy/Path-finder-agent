@@ -5,6 +5,7 @@
 
 using namespace std;
 
+
 /* in this int array :
     goal is set to 100
     start is set to 0
