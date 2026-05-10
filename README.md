@@ -1,5 +1,8 @@
-<img width="250" height="250" alt="Screenshot from 2026-05-10 19-12-10" src="https://github.com/user-attachments/assets/f50e4f33-2108-4a47-97ec-b0aac9b2546c" />
-<img width="250" height="250" alt="Screenshot from 2026-05-10 19-12-28" src="https://github.com/user-attachments/assets/e62b12f7-2520-4375-8e3c-a381b405bd6b" />
+
+<p align="center">
+  <img width="400" height="400" alt="Screenshot 1" src="https://github.com/user-attachments/assets/f50e4f33-2108-4a47-97ec-b0aac9b2546c" />
+  <img width="400" height="400" alt="Screenshot 2" src="https://github.com/user-attachments/assets/e62b12f7-2520-4375-8e3c-a381b405bd6b" />
+</p>
 
 # Constrained Grid Navigation Engine
 
