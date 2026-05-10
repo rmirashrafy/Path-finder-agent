@@ -4,7 +4,6 @@ A stack-based pathfinding and navigation simulator built in C++ using SFML. This
 
 Originally developed as an algorithm design project, the system demonstrates concepts related to constrained pathfinding, procedural environment generation, intelligent traversal systems, and stack-based state management.
 
----
 
 # Problem Statement
 
@@ -180,9 +179,7 @@ Sample output:
 
 Although originally designed as an academic project, the concepts demonstrated in this repository are closely related to real-world topics such as robotic navigation, constrained pathfinding systems, intelligent agents, procedural simulations, game AI, and autonomous traversal systems.
 
-The project also demonstrates practical experience with algorithmic problem solving, dynamic state management, procedural environment generation, and low-level data structure implementation.
 
----
 
 # Future Improvements
 
