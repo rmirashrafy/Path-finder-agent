@@ -29,7 +29,7 @@ Tunnel cells behave as rollback traps. When the agent enters a tunnel, it is mov
 
 The objective is to successfully reach the goal while handling all movement constraints and avoiding infinite traversal loops.
 
----
+
 
 # Environment Generation
 
@@ -54,7 +54,7 @@ This means the agent must move diagonally upward-right for three steps.
 
 Each generated map behaves differently, creating a dynamic traversal environment every time the simulation runs.
 
----
+
 
 # Solution Overview
 
@@ -88,7 +88,7 @@ Visited cells are marked to prevent infinite loops and repeated exploration of t
 
 If all neighboring cells become exhausted and no further traversal is possible, the system concludes that no valid path exists.
 
----
+
 
 # Visualization
 
@@ -98,7 +98,7 @@ Each cell is rendered according to its current behavior and state. Vector cells 
 
 Visited cells are colored differently to visualize traversal history and exploration behavior.
 
----
+
 
 # Technical Implementation
 
@@ -117,7 +117,7 @@ Real-time visualization
 
 The stack implementation is one of the central components of the system and is responsible for maintaining traversal history, supporting rollback operations, and reconstructing explored paths.
 
----
+
 
 # Example Mechanics
 
@@ -145,7 +145,7 @@ Agent moves backward
 Traversal resumes
 ```
 
----
+
 
 # Compile and Run
 
@@ -173,7 +173,7 @@ Sample output:
 [0,0][1,0][2,1][3,2]...[8,7]...Goal!
 ```
 
----
+
 
 # Applications
 
