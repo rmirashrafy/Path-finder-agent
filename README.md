@@ -1,8 +1,4 @@
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/f50e4f33-2108-4a47-97ec-b0aac9b2546c" width="45%" />
-  <img src="https://github.com/user-attachments/assets/e62b12f7-2520-4375-8e3c-a381b405bd6b" width="45%" />
-</p>
 
 # Constrained Grid Navigation Engine
 
@@ -105,6 +101,10 @@ Each cell is rendered according to its current behavior and state. Vector cells 
 Visited cells are colored differently to visualize traversal history and exploration behavior.
 
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f50e4f33-2108-4a47-97ec-b0aac9b2546c" width="45%" />
+  <img src="https://github.com/user-attachments/assets/e62b12f7-2520-4375-8e3c-a381b405bd6b" width="45%" />
+</p>
 
 # Technical Implementation
 
